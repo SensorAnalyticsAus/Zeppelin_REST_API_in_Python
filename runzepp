@@ -1,0 +1,67 @@
+#!/opt/local/bin/python
+# runzepp
+
+NOTENM='/00-va-App 0.2.8.7' #Edit Zeppelin note full name with / here
+HOSTN='bigva224win.local' #Replace with network hostname if running externally
+
+import requests,json
+import time
+from datetime import datetime
+from pprint import pprint
+
+def getid():
+        url='http://bigva224win.local:8081/api/notebook'
+        data='''{}'''
+        response = requests.get(url,data=data)
+        zjson=response.json()
+        for i in range(len(zjson['body'])):
+                if zjson['body'][i]['path'] == NOTENM:
+                        print(NOTENM,'->',zjson['body'][i]['id'])
+                        return zjson['body'][i]['id']
+def chkzepp(url,data):
+	response = requests.get(url,data=data)
+	zjson=response.json()
+	zstatus=zjson['body']['isRunning']
+	return zstatus,zjson # returns True if VA App running otherwise False
+####
+NOTEID=getid()
+
+# datetime object containing current date and time
+now = datetime.now()
+print("VA App started:", now)
+# dd/mm/YY H:M:S
+dt_string = now.strftime("%d-%b-%Y %H:%M:%S")
+print(dt_string)	
+
+url='http://bigva224win.local:8081/api/notebook/job/'+NOTEID
+data='''{}'''
+
+zcheck,zjson2 = chkzepp(url,data)
+if not zcheck:
+	response = requests.post(url,data=data)
+	zjson=response.json()
+	zfjson=json.dumps(zjson, indent=4)
+	print(zfjson)
+
+zcheck,zjson2 = chkzepp(url,data)
+while zcheck:
+	time.sleep(15)
+	zcheck,zjson2 = chkzepp(url,data)
+
+#print(json.dumps(zjson2, indent=4))
+pprint(zjson2)
+zdict=json.loads(json.dumps(zjson2))
+zlast=len(zdict['body']['paragraphs'])-1
+print('VA App id',zjson2['body']['id'],'Started ',
+       zjson2['body']['paragraphs'][0]['started'])
+print('VA App id',zjson2['body']['id'],'Finished',
+       zjson2['body']['paragraphs'][zlast]['finished'])
+
+for i in range (len(zdict['body']['paragraphs'])):
+        if zjson2['body']['paragraphs'][i]['status'] != 'FINISHED':
+                print('Paragraph',i+1,zjson2['body']['paragraphs'][i]['status'])
+print('VA App:',NOTENM,'Completed')
+#
+# crontab runs at 11:50pm every night
+#
+# 50 23 * * * /home/saauser/bin/runzepp > /home/saauser/log/va-log.txt 2>&1

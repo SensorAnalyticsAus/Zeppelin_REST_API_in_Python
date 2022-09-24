@@ -1,0 +1,14 @@
+#!/opt/local/bin/python
+
+HOSTNM='bigva224win.local' # Replace with the network hostname if running externally
+
+import requests, json
+from pprint import pprint
+
+url='http://'+HOSTNM+':8081/api/notebook'
+data='''{}'''
+response = requests.get(url,data=data)
+#ztext=response.text
+zjson=response.json()
+#print(json.dumps(zjson, indent=4))
+pprint(zjson)

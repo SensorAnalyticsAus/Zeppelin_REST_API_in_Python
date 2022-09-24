@@ -1,0 +1,53 @@
+#!/opt/local/bin/python
+# chkzepp
+
+NOTENM='/00-va-App 0.2.8.7' #Edit Zeppelin note full name with / here
+HOSTN='bigva224win.local' #Replace with network hostname if running externally
+
+import requests,json
+from datetime import datetime
+from pprint import pprint
+
+def getid():
+	url='http://bigva224win.local:8081/api/notebook'
+	data='''{}'''
+	response = requests.get(url,data=data)
+	zjson=response.json()
+	for i in range(len(zjson['body'])):
+		if zjson['body'][i]['path'] == NOTENM:
+			print(NOTENM,'->',zjson['body'][i]['id'])
+			return zjson['body'][i]['id']
+NOTEID=getid()
+
+# datetime object containing current date and time
+now = datetime.now()
+print("now =", now)
+# dd/mm/YY H:M:S
+dt_string = now.strftime("%d-%b-%Y %H:%M:%S")
+print(dt_string)	
+
+
+url='http://'+HOSTN+':8081/api/notebook/job/'+NOTEID
+data='''{}'''
+response = requests.get(url,data=data)
+#ztext=response.text
+zjson=response.json()
+zstatus=zjson['body']['isRunning']
+
+if zstatus:
+	print('Is VA App running?',zstatus)
+                #zjson['body']['isRunning'])
+else:
+	#print(json.dumps(zjson, indent=4))
+	pprint(zjson)
+	zlast=len(zjson['body']['paragraphs'])-1
+	print('VA App id',zjson['body']['id'],'Started ',
+		zjson['body']['paragraphs'][0]['started'])
+	print('VA App id',zjson['body']['id'],'Finished',
+		zjson['body']['paragraphs'][zlast]['finished'])
+	print('VA App:',NOTENM,'Completed')
+
+for i in range (len(zjson['body']['paragraphs'])):
+	if zjson['body']['paragraphs'][i]['status'] != 'FINISHED':
+		print('Paragraph',i+1,zjson['body']['paragraphs'][i]['status'])
+#
