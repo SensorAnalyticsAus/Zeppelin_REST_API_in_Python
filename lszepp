@@ -1,11 +1,12 @@
-#!/opt/local/bin/python
+#!/usr/bin/python
 
-HOSTNM='bigva224win.local' # Replace with the network hostname if running externally
+HOSTNM='localhost' # Replace with the network hostname if running externally
+PNO='8081'
 
 import requests, json
 from pprint import pprint
 
-url='http://'+HOSTNM+':8081/api/notebook'
+url='http://'+HOSTNM+':'+PNO+'/api/notebook'
 data='''{}'''
 response = requests.get(url,data=data)
 #ztext=response.text

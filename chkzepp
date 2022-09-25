@@ -1,15 +1,16 @@
-#!/opt/local/bin/python
+#!/usr/bin/python
 # chkzepp
 
 NOTENM='/00-va-App 0.2.8.7' #Edit Zeppelin note full name with / here
-HOSTN='bigva224win.local' #Replace with network hostname if running externally
+HOSTN='localhost' #Replace with network hostname if running externally
+PNO='8081'
 
 import requests,json
 from datetime import datetime
 from pprint import pprint
 
 def getid():
-	url='http://bigva224win.local:8081/api/notebook'
+	url='http://'+HOSTN+':'+PNO+'/api/notebook'
 	data='''{}'''
 	response = requests.get(url,data=data)
 	zjson=response.json()
@@ -27,7 +28,7 @@ dt_string = now.strftime("%d-%b-%Y %H:%M:%S")
 print(dt_string)	
 
 
-url='http://'+HOSTN+':8081/api/notebook/job/'+NOTEID
+url='http://'+HOSTN+':'+PNO+'/api/notebook/job/'+NOTEID
 data='''{}'''
 response = requests.get(url,data=data)
 #ztext=response.text
