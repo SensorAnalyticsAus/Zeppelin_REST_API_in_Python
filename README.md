@@ -1,5 +1,5 @@
 ## ABOUT
-##### Python script templates for running and monitoring of Zeppelin notes from CLI.
+##### Python script templates for running and monitoring of Zeppelin notes from CLI for Apache Zeppelin 0.10.0.
 ##### For details [Apache Zeppelin REST API].
 ## Usage
 ##### **IMPORTANT:** HOSTNM and PNO variables must be changed to the actual Zeppelin *hostname* and *port number* values in these scripts. 
